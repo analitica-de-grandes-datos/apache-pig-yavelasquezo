@@ -34,3 +34,21 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+
+-- cargo los datos
+lines = LOAD 'data.csv' USING PigStorage(',') AS (numero:int, nombre:CHARARRAY, apellido:CHARARRAY, fecha:Datetime, color:CHARARRAY, num:int);
+
+selColumnas = FOREACH lines GENERATE ToString(fecha, 'yyyy-MM-dd') as fechaUno, ToString(fecha, 'MMM') as fechaDos, 
+ToString(fecha, 'MM,M') as fechaTres;
+
+colUnidas = FOREACH selColumnas GENERATE fechaUno,
+(fechaDos == 'Jan'? 'ene':(fechaDos == 'Feb'? 'feb':(fechaDos == 'Mar'? 'mar':(fechaDos == 'Apr'? 'abr':
+(fechaDos == 'May'? 'may':(fechaDos == 'Jun'? 'jun':(fechaDos == 'Jul'? 'jul':(fechaDos == 'Aug'? 'ago':
+(fechaDos == 'Sep'? 'sep':(fechaDos == 'Oct'? 'oct':(fechaDos == 'Nov'? 'nov':
+(fechaDos == 'Dec'? 'dic':'falso')))))))))))) as diaAbreviado,
+fechaTres;
+
+--dump colUnidas;
+
+-- escribe el archivo de salida en el sistema local
+STORE colUnidas INTO 'output' USING PigStorage(',');
