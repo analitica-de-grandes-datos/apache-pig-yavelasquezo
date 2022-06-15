@@ -21,5 +21,17 @@ $ pig -x local -f pregunta.pig
 
         /* >>> Escriba su respuesta a partir de este punto <<< */
 
-*/
 
+
+-- cargo los datos
+lines = LOAD 'data.csv' USING PigStorage(',') AS (numero:int, nombre:CHARARRAY, apellido:CHARARRAY, fecha:CHARARRAY, color:CHARARRAY, num:int);
+
+--selectcolor = FOREACH lines GENERATE CONCAT(nombre, ',', color) as colUnidas;
+--bcolor = FOREACH  selectcolor GENERATE FLATTEN(REGEX_EXTRACT_ALL(colUnidas, '([a-zA-Z]+,.*b.*)')) as result;
+--filtro = FILTER bcolor BY (result is NOT NULL);
+
+selectcolor = FOREACH lines GENERATE nombre, FLATTEN(REGEX_EXTRACT_ALL(color, '(.*b.*)')) as colorFiltrado;
+filtro = FILTER selectcolor BY (colorFiltrado is NOT NULL);
+
+-- escribe el archivo de salida en el sistema local
+STORE filtro INTO 'output' USING PigStorage(',');

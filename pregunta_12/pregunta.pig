@@ -26,4 +26,13 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
+lines = LOAD 'data.csv' USING PigStorage(',') AS (numero:int, nombre:CHARARRAY, apellido:CHARARRAY, fecha:CHARARRAY, color:CHARARRAY, num:int);
 
+columna = FOREACH lines GENERATE apellido;
+
+x = FILTER columna BY ($0 matches '.*[DEFGHIJK].*');
+
+-- dump x;
+
+-- escribe el archivo de salida en el sistema local
+STORE x INTO 'output';
