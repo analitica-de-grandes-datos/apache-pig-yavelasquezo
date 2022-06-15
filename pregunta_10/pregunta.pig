@@ -20,4 +20,14 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
+---asigno los datos 
+lines = LOAD 'data.csv' USING PigStorage(',') AS (numero:int, nombre:CHARARRAY, apellido:CHARARRAY, fecha:CHARARRAY, color:CHARARRAY, num:int);
 
+columna = FOREACH lines GENERATE apellido, COUNT(TOKENIZE(REPLACE(apellido,'',' '))) as letter;
+
+orden = ORDER columna BY letter desc, apellido asc;
+
+s = LIMIT orden 5;
+
+-- saco archivo al local
+STORE s INTO 'output' USING PigStorage(',');
