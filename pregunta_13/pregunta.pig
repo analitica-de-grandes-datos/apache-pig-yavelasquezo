@@ -22,3 +22,13 @@ $ pig -x local -f pregunta.pig
         /* >>> Escriba su respuesta a partir de este punto <<< */
 */
 
+lines = LOAD 'data.csv' USING PigStorage(',') AS (numero:int, nombre:CHARARRAY, apellido:CHARARRAY, fecha:CHARARRAY, color:CHARARRAY, num:int);
+
+selectcolor = FOREACH lines GENERATE color;
+
+bcolor = FILTER selectcolor BY ($0 matches '.*b.*');
+
+--dump selectcolor;
+
+-- escribe el archivo de salida en el sistema local
+STORE bcolor INTO 'output';
